@@ -1,28 +1,14 @@
-from pathlib import Path
+from sqlalchemy.orm import Session
 
-from backend.core.config import settings
-from backend.domain.models import Template
+from backend.database.models import TemplateRecord
 
 
 class TemplateRepository:
-    def __init__(self) -> None:
-        public_dir = Path(settings.frontend_public_dir)
-        self.templates = [
-            Template(
-                id=f"local-template-{number:03d}",
-                title=f"Template {number:03d}",
-                length="",
-                media_type="video",
-                media_url=f"/assets/templates/local/local-template-{number:03d}.mp4",
-                poster_url=f"/assets/templates/local/local-template-{number:03d}-poster.jpg",
-                default_prompt="Bugun sizga bitta muhim fikrni aytaman.",
-                source_path=str(public_dir / f"assets/templates/local/local-template-{number:03d}.mp4"),
-            )
-            for number in range(1, 21)
-        ]
+    def __init__(self, db: Session) -> None:
+        self.db = db
 
-    def list(self) -> list[Template]:
-        return self.templates
+    def list(self) -> list[TemplateRecord]:
+        return self.db.query(TemplateRecord).order_by(TemplateRecord.created_at.asc(), TemplateRecord.id.asc()).all()
 
-    def get(self, template_id: str) -> Template | None:
-        return next((template for template in self.templates if template.id == template_id), None)
+    def get(self, template_id: str) -> TemplateRecord | None:
+        return self.db.get(TemplateRecord, template_id)

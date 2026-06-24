@@ -12,6 +12,7 @@ export function ScriptEditor({
   estimatedSeconds,
   isGenerating,
   isTranscribing,
+  generatedUrl,
   onScriptChange,
   onLanguageChange,
   onVoiceChange,
@@ -110,9 +111,14 @@ export function ScriptEditor({
           <Wand2 size={18} aria-hidden="true" />
           Generate Preview
         </button>
-        <button className="icon-button dark" type="button" aria-label="Download preview">
+        <a
+          className={`icon-button dark ${generatedUrl ? "" : "disabled"}`}
+          href={generatedUrl || undefined}
+          download
+          aria-label="Download preview"
+        >
           <Download size={18} aria-hidden="true" />
-        </button>
+        </a>
       </div>
     </section>
   );

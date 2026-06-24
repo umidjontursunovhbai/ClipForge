@@ -1,6 +1,6 @@
 # ClipForge
 
-ClipForge is a first MVP for a short-video template generator. The current version is the website/frontend: users pick a camera-front short-video template, write their own script, choose language and voice style, then generate a simulated preview.
+ClipForge is a first MVP for a short-video template generator. Users sign in, pick a camera-front short-video template, let the backend transcribe the original audio into script text, edit the script, then queue a generated preview.
 
 ## Project Structure
 
@@ -17,6 +17,10 @@ backend/workers/               Future GPU/background workers
 
 ```bash
 npm --prefix apps/frontend install
+docker compose up -d postgres
+python3 -m venv .venv
+.venv/bin/pip install -r backend/requirements.txt
+.venv/bin/uvicorn backend.api.main:app --host 127.0.0.1 --port 8088
 npm run dev
 ```
 
@@ -24,6 +28,13 @@ Open:
 
 ```text
 http://127.0.0.1:5173/
+```
+
+Default admin account:
+
+```text
+username: admin
+password: admin12345
 ```
 
 ## Build For Server
@@ -46,9 +57,13 @@ Current API endpoints:
 
 ```text
 GET  /health
+POST /api/auth/login
+GET  /api/auth/me
 GET  /api/templates
 GET  /api/templates/{template_id}
 POST /api/templates/{template_id}/transcription
+POST /api/templates/{template_id}/transcription/jobs
+GET  /api/templates/transcription/jobs/{job_id}
 POST /api/generation/preview
 GET  /api/generation/jobs/{job_id}
 ```
@@ -60,6 +75,26 @@ CLIPFORGE_TRANSCRIPTION_MODEL_SIZE=small
 CLIPFORGE_TRANSCRIPTION_DEVICE=auto
 CLIPFORGE_TRANSCRIPTION_COMPUTE_TYPE=auto
 ```
+
+## Postgres And Generated Video Storage
+
+The app uses Postgres for users, sessions, templates, jobs, and generated asset metadata. Generated video files are not stored inside Postgres. They are written to:
+
+```text
+backend/storage/generated/
+```
+
+Postgres stores the output path and public URL. Later this can move to S3, Cloudflare R2, or MinIO without changing the frontend contract.
+
+## Lip-Sync Model Hook
+
+The backend has a lip-sync worker adapter. On a GPU server, set `CLIPFORGE_LIPSYNC_COMMAND` to the command that runs your model:
+
+```bash
+CLIPFORGE_LIPSYNC_COMMAND='python run_lipsync.py --video {video_path} --text {script} --output {output_path}'
+```
+
+If this env var is empty, the worker copies the template video into generated storage so the full queue/storage/player flow can still be tested.
 
 ## Import Template Videos
 
@@ -83,7 +118,7 @@ It writes normalized videos and posters to:
 apps/frontend/public/assets/templates/local/
 ```
 
-If the number of local templates changes, update `localTemplateSpecs` in `apps/frontend/src/features/templates/data/templates.js`.
+Template records are seeded into Postgres from `apps/frontend/public/assets/templates/local/` on backend startup.
 
 Import one Instagram template:
 
@@ -98,7 +133,7 @@ apps/frontend/public/assets/templates/<slug>.mp4
 apps/frontend/public/assets/templates/<slug>-poster.jpg
 ```
 
-After import, add a template object in `apps/frontend/src/features/templates/data/templates.js` that points to those files.
+After import, restart the backend so the template seed sees the new files.
 
 ## Future GPU Architecture
 
@@ -113,4 +148,4 @@ User script + selected template
   -> website preview
 ```
 
-For a free-start MVP, first keep this as a template editor and preview workflow. After the UI is useful, connect it to a GPU server or a hosted notebook/worker.
+For a free-start MVP, the queue/storage contract is already in place. The next GPU step is to point `CLIPFORGE_LIPSYNC_COMMAND` at the selected local lip-sync model.

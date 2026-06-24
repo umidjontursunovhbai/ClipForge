@@ -17,3 +17,4 @@ class GenerationJobResponse(BaseModel):
     language: str
     voice: str
     result_url: str | None = None
+    error: str | None = None
