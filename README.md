@@ -6,10 +6,10 @@ ClipForge is a first MVP for a short-video template generator. The current versi
 
 ```text
 apps/frontend/                 React + Vite website
-backend/api/                   Future HTTP API handlers
-backend/services/              Future business logic and GPU orchestration
-backend/repositories/          Future data-access layer
-backend/database/migrations/   Future database schema migrations
+backend/api/                   FastAPI app, routes, schemas
+backend/services/              Business logic and future GPU orchestration
+backend/repositories/          Data-access layer
+backend/database/migrations/   Database schema migrations
 backend/workers/               Future GPU/background workers
 ```
 
@@ -33,6 +33,24 @@ npm run build
 ```
 
 The production files are created in `apps/frontend/dist/`. You can serve that folder from any web server or deploy it behind a backend that talks to GPU workers.
+
+## Run Backend API
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r backend/requirements.txt
+.venv/bin/uvicorn backend.api.main:app --host 127.0.0.1 --port 8088
+```
+
+Current API endpoints:
+
+```text
+GET  /health
+GET  /api/templates
+GET  /api/templates/{template_id}
+POST /api/generation/preview
+GET  /api/generation/jobs/{job_id}
+```
 
 ## Import Template Videos
 

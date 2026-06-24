@@ -1,0 +1,33 @@
+# ClipForge Backend
+
+FastAPI skeleton for the future GPU-backed video generation service.
+
+## Folders
+
+```text
+api/                 HTTP app, routes, schemas
+core/                config
+domain/              domain models
+services/            business logic
+repositories/        data access
+database/migrations/ future SQL migrations
+workers/             future GPU job dispatch
+```
+
+## Run
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r backend/requirements.txt
+.venv/bin/uvicorn backend.api.main:app --host 127.0.0.1 --port 8088
+```
+
+## API
+
+```text
+GET  /health
+GET  /api/templates
+GET  /api/templates/{template_id}
+POST /api/generation/preview
+GET  /api/generation/jobs/{job_id}
+```
