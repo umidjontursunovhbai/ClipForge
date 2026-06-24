@@ -19,10 +19,46 @@ import {
 } from "lucide-react";
 import React, { useMemo, useState } from "react";
 
+const localTemplateSpecs = [
+  ["001", "28s"],
+  ["002", "19s"],
+  ["003", "14s"],
+  ["004", "26s"],
+  ["005", "42s"],
+  ["006", "60s"],
+  ["007", "48s"],
+  ["008", "44s"],
+  ["009", "26s"],
+  ["010", "40s"],
+  ["011", "49s"],
+  ["012", "43s"],
+  ["013", "53s"],
+  ["014", "69s"],
+  ["015", "84s"],
+  ["016", "60s"],
+  ["017", "56s"],
+  ["018", "22s"],
+  ["019", "35s"],
+  ["020", "42s"],
+];
+
+const localTemplates = localTemplateSpecs.map(([number, length]) => ({
+  id: `local-template-${number}`,
+  title: `Template ${number}`,
+  tone: "Confident",
+  length,
+  mediaType: "video",
+  media: `/assets/templates/local/local-template-${number}.mp4`,
+  poster: `/assets/templates/local/local-template-${number}-poster.jpg`,
+  sourcePath: `/Users/gg/Public/videogen/vd-gen.api-service/media/templates/template_${number}/test${Number(number)}.mp4`,
+  prompt: "Bugun sizga bitta muhim fikrni aytaman: oddiy gapni aniq, qisqa va esda qoladigan qilib yetkazing.",
+}));
+
 const templates = [
+  ...localTemplates,
   {
     id: "instagram-dz7gcvtfocc",
-    title: "Instagram template 01",
+    title: "Instagram template",
     tone: "Confident",
     length: "51s",
     mediaType: "video",
@@ -31,49 +67,17 @@ const templates = [
     sourceUrl: "https://www.instagram.com/p/DZ7GcVTFOcc/",
     prompt: "Bugun sizga bitta oddiy fikrni aytaman: natija olish uchun avval aniq template tanlang.",
   },
-  {
-    id: "founder",
-    title: "Founder pitch",
-    tone: "Confident",
-    length: "18s",
-    mediaType: "image",
-    media: "/assets/template-founder.svg",
-    prompt: "Men bugun sizga oddiy, lekin foydali yechimni ko'rsataman.",
-  },
-  {
-    id: "coach",
-    title: "Coach lesson",
-    tone: "Casual",
-    length: "22s",
-    mediaType: "image",
-    media: "/assets/template-coach.svg",
-    prompt: "Bugungi mini dars: boshlash qiyin bo'lsa, vazifani kichraytir.",
-  },
-  {
-    id: "product",
-    title: "Product demo",
-    tone: "Confident",
-    length: "16s",
-    mediaType: "image",
-    media: "/assets/template-product.svg",
-    prompt: "Bu video sizning mahsulotingizni 15 soniyada tushuntirib beradi.",
-  },
-  {
-    id: "explainer",
-    title: "Quick explainer",
-    tone: "Casual",
-    length: "20s",
-    mediaType: "image",
-    media: "/assets/template-explainer.svg",
-    prompt: "Avval muammoni ayting, keyin yechimni bitta misol bilan ko'rsating.",
-  },
 ];
 
 const languages = ["Uzbek", "English"];
 const voices = ["Casual", "Confident"];
 
-function TemplateMedia({ template }) {
+function TemplateMedia({ template, autoPlay = false }) {
   if (template.mediaType === "video") {
+    if (!autoPlay) {
+      return <img src={template.poster} alt="" />;
+    }
+
     return (
       <video
         src={template.media}
@@ -81,8 +85,8 @@ function TemplateMedia({ template }) {
         muted
         loop
         playsInline
-        autoPlay
-        preload="metadata"
+        autoPlay={autoPlay}
+        preload={autoPlay ? "auto" : "metadata"}
         aria-label={`${template.title} template video`}
       />
     );
@@ -239,7 +243,7 @@ export default function App() {
 
           <section className="preview-column" aria-label="Preview">
             <div className="phone-preview">
-              <TemplateMedia template={selectedTemplate} />
+              <TemplateMedia template={selectedTemplate} autoPlay />
               <div className="preview-topline">
                 <BadgeCheck size={16} aria-hidden="true" />
                 <span>{selectedTemplate.title}</span>

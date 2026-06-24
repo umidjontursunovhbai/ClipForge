@@ -27,6 +27,28 @@ The production files are created in `dist/`. You can serve that folder from any 
 
 Only import videos that you own or have permission to use as templates.
 
+Import local template folders:
+
+```bash
+npm run import:local
+```
+
+By default this reads:
+
+```text
+/Users/gg/Public/videogen/vd-gen.api-service/media/templates/template_*/test*.mp4
+```
+
+It writes normalized videos and posters to:
+
+```text
+public/assets/templates/local/
+```
+
+If the number of local templates changes, update `localTemplateSpecs` in `src/App.jsx`.
+
+Import one Instagram template:
+
 ```bash
 npm run import:instagram -- https://www.instagram.com/p/DZ7GcVTFOcc/ instagram-dz7gcvtfocc
 ```

@@ -7,6 +7,7 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "import:instagram": "bash scripts/import-instagram-template.sh",
+    "import:local": "bash scripts/import-local-templates.sh",
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
