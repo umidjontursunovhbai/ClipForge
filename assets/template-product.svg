@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1600" role="img" aria-label="Product demo video poster">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#101716"/>
+      <stop offset=".52" stop-color="#24322f"/>
+      <stop offset="1" stop-color="#1c1614"/>
+    </linearGradient>
+    <linearGradient id="jacket" x1="0" x2="1">
+      <stop offset="0" stop-color="#192725"/>
+      <stop offset="1" stop-color="#21dfc7"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="1600" fill="url(#bg)"/>
+  <rect x="82" y="180" width="736" height="640" rx="42" fill="#21dfc7" opacity=".1"/>
+  <rect x="590" y="330" width="144" height="230" rx="28" fill="#f7fffb" opacity=".9"/>
+  <rect x="620" y="370" width="84" height="18" rx="9" fill="#ff7a59"/>
+  <rect x="620" y="414" width="54" height="54" rx="14" fill="#21dfc7"/>
+  <path d="M166 1600c30-261 89-423 178-487 72-52 214-50 288 5 89 65 147 224 174 482Z" fill="url(#jacket)"/>
+  <path d="M368 837h186l45 206c-54 69-176 66-224-5Z" fill="#c6866c"/>
+  <path d="M341 666c-4-118 48-202 128-202 82 0 137 84 134 202-3 89-61 164-132 164-72 0-127-75-130-164Z" fill="#d49572"/>
+  <path d="M327 624c12-102 68-165 147-165 75 0 131 57 146 154-87-39-185-35-293 11Z" fill="#231612"/>
+  <circle cx="424" cy="672" r="10" fill="#211513"/>
+  <circle cx="527" cy="672" r="10" fill="#211513"/>
+  <path d="M430 756c31 26 71 26 103 0" stroke="#4d2b24" stroke-width="12" stroke-linecap="round"/>
+  <rect x="152" y="1210" width="596" height="108" rx="20" fill="#050807" opacity=".74"/>
+  <rect x="184" y="1245" width="374" height="18" rx="9" fill="#fff" opacity=".9"/>
+  <rect x="184" y="1283" width="238" height="14" rx="7" fill="#21dfc7" opacity=".95"/>
+</svg>
