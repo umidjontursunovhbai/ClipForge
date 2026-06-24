@@ -1,8 +1,8 @@
 import React from "react";
 
-export function TemplateMedia({ template, autoPlay = false }) {
+export function TemplateMedia({ template, autoPlay = false, controls = false }) {
   if (template.mediaType === "video") {
-    if (!autoPlay) {
+    if (!autoPlay && !controls) {
       return <img src={template.poster} alt="" />;
     }
 
@@ -14,6 +14,7 @@ export function TemplateMedia({ template, autoPlay = false }) {
         loop
         playsInline
         autoPlay={autoPlay}
+        controls={controls}
         preload={autoPlay ? "auto" : "metadata"}
         aria-label={`${template.title} template video`}
       />

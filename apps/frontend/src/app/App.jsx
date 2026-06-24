@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   Captions,
   Clapperboard,
   Gauge,
@@ -20,6 +21,7 @@ import { playVoicePreview } from "../services/voicePreview.js";
 export default function App() {
   const [selectedId, setSelectedId] = useState(templates[0].id);
   const [script, setScript] = useState(templates[0].prompt);
+  const [view, setView] = useState("templates");
   const [language, setLanguage] = useState("Uzbek");
   const [voice, setVoice] = useState("Casual");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -40,6 +42,7 @@ export default function App() {
     setVoice(template.tone);
     setResult("Template loaded");
     setProgress(0);
+    setView("editor");
   }
 
   function generatePreview() {
@@ -71,18 +74,28 @@ export default function App() {
         </div>
 
         <nav className="nav-stack">
-          <a className="nav-item active" href="#templates" aria-label="Templates">
+          <button
+            className={`nav-item ${view === "templates" ? "active" : ""}`}
+            type="button"
+            onClick={() => setView("templates")}
+            aria-label="Templates"
+          >
             <Library size={18} aria-hidden="true" />
-          </a>
-          <a className="nav-item" href="#script" aria-label="Script">
+          </button>
+          <button
+            className={`nav-item ${view === "editor" ? "active" : ""}`}
+            type="button"
+            onClick={() => setView("editor")}
+            aria-label="Script"
+          >
             <Captions size={18} aria-hidden="true" />
-          </a>
-          <a className="nav-item" href="#voice" aria-label="Voice">
+          </button>
+          <button className="nav-item" type="button" aria-label="Voice">
             <Mic2 size={18} aria-hidden="true" />
-          </a>
-          <a className="nav-item" href="#settings" aria-label="Settings">
+          </button>
+          <button className="nav-item" type="button" aria-label="Settings">
             <Settings2 size={18} aria-hidden="true" />
-          </a>
+          </button>
         </nav>
 
         <button className="icon-button" aria-label="Create new template">
@@ -90,44 +103,48 @@ export default function App() {
         </button>
       </aside>
 
-      <section className="workspace">
-        <header className="topbar">
-          <label className="search-control" htmlFor="template-search">
-            <Search size={18} aria-hidden="true" />
-            <input id="template-search" type="search" placeholder="Search camera front templates" />
-          </label>
+      <section className={`workspace ${view === "templates" ? "gallery-workspace" : ""}`}>
+        {view === "editor" && (
+          <header className="topbar">
+            <label className="search-control" htmlFor="template-search">
+              <Search size={18} aria-hidden="true" />
+              <input id="template-search" type="search" placeholder="Search camera front templates" />
+            </label>
 
-          <div className="queue-pill">
-            <Gauge size={17} aria-hidden="true" />
-            <span>Server GPU queue</span>
-            <strong>Idle</strong>
+            <div className="queue-pill">
+              <Gauge size={17} aria-hidden="true" />
+              <span>Server GPU queue</span>
+              <strong>Idle</strong>
+            </div>
+          </header>
+        )}
+
+        {view === "templates" ? (
+          <TemplateFeed templates={templates} onChooseTemplate={chooseTemplate} />
+        ) : (
+          <div className="editor-view">
+            <button className="back-button" type="button" onClick={() => setView("templates")}>
+              <ArrowLeft size={18} aria-hidden="true" />
+              Templates
+            </button>
+            <PhonePreview selectedTemplate={selectedTemplate} />
+            <ScriptEditor
+              script={script}
+              language={language}
+              voice={voice}
+              result={result}
+              progress={progress}
+              wordCount={wordCount}
+              estimatedSeconds={estimatedSeconds}
+              isGenerating={isGenerating}
+              onScriptChange={setScript}
+              onLanguageChange={setLanguage}
+              onVoiceChange={setVoice}
+              onPlayVoice={playVoice}
+              onGeneratePreview={generatePreview}
+            />
           </div>
-        </header>
-
-        <div className="main-grid">
-          <TemplateFeed
-            templates={templates}
-            selectedId={selectedId}
-            script={script}
-            onChooseTemplate={chooseTemplate}
-          />
-          <PhonePreview selectedTemplate={selectedTemplate} script={script} onPlayVoice={playVoice} />
-          <ScriptEditor
-            script={script}
-            language={language}
-            voice={voice}
-            result={result}
-            progress={progress}
-            wordCount={wordCount}
-            estimatedSeconds={estimatedSeconds}
-            isGenerating={isGenerating}
-            onScriptChange={setScript}
-            onLanguageChange={setLanguage}
-            onVoiceChange={setVoice}
-            onPlayVoice={playVoice}
-            onGeneratePreview={generatePreview}
-          />
-        </div>
+        )}
       </section>
     </main>
   );
