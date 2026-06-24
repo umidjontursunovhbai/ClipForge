@@ -21,11 +21,23 @@ import React, { useMemo, useState } from "react";
 
 const templates = [
   {
+    id: "instagram-dz7gcvtfocc",
+    title: "Instagram template 01",
+    tone: "Confident",
+    length: "51s",
+    mediaType: "video",
+    media: "/assets/templates/instagram-dz7gcvtfocc.mp4",
+    poster: "/assets/templates/instagram-dz7gcvtfocc-poster.jpg",
+    sourceUrl: "https://www.instagram.com/p/DZ7GcVTFOcc/",
+    prompt: "Bugun sizga bitta oddiy fikrni aytaman: natija olish uchun avval aniq template tanlang.",
+  },
+  {
     id: "founder",
     title: "Founder pitch",
     tone: "Confident",
     length: "18s",
-    image: "/assets/template-founder.svg",
+    mediaType: "image",
+    media: "/assets/template-founder.svg",
     prompt: "Men bugun sizga oddiy, lekin foydali yechimni ko'rsataman.",
   },
   {
@@ -33,7 +45,8 @@ const templates = [
     title: "Coach lesson",
     tone: "Casual",
     length: "22s",
-    image: "/assets/template-coach.svg",
+    mediaType: "image",
+    media: "/assets/template-coach.svg",
     prompt: "Bugungi mini dars: boshlash qiyin bo'lsa, vazifani kichraytir.",
   },
   {
@@ -41,7 +54,8 @@ const templates = [
     title: "Product demo",
     tone: "Confident",
     length: "16s",
-    image: "/assets/template-product.svg",
+    mediaType: "image",
+    media: "/assets/template-product.svg",
     prompt: "Bu video sizning mahsulotingizni 15 soniyada tushuntirib beradi.",
   },
   {
@@ -49,13 +63,33 @@ const templates = [
     title: "Quick explainer",
     tone: "Casual",
     length: "20s",
-    image: "/assets/template-explainer.svg",
+    mediaType: "image",
+    media: "/assets/template-explainer.svg",
     prompt: "Avval muammoni ayting, keyin yechimni bitta misol bilan ko'rsating.",
   },
 ];
 
 const languages = ["Uzbek", "English"];
 const voices = ["Casual", "Confident"];
+
+function TemplateMedia({ template }) {
+  if (template.mediaType === "video") {
+    return (
+      <video
+        src={template.media}
+        poster={template.poster}
+        muted
+        loop
+        playsInline
+        autoPlay
+        preload="metadata"
+        aria-label={`${template.title} template video`}
+      />
+    );
+  }
+
+  return <img src={template.media} alt="" />;
+}
 
 export default function App() {
   const [selectedId, setSelectedId] = useState(templates[0].id);
@@ -184,7 +218,7 @@ export default function App() {
                   type="button"
                 >
                   <span className="video-frame">
-                    <img src={template.image} alt="" />
+                    <TemplateMedia template={template} />
                     <span className="caption-strip">{script || "Your words appear here"}</span>
                     <span className="play-chip">
                       <Play size={14} fill="currentColor" aria-hidden="true" />
@@ -205,7 +239,7 @@ export default function App() {
 
           <section className="preview-column" aria-label="Preview">
             <div className="phone-preview">
-              <img src={selectedTemplate.image} alt="" />
+              <TemplateMedia template={selectedTemplate} />
               <div className="preview-topline">
                 <BadgeCheck size={16} aria-hidden="true" />
                 <span>{selectedTemplate.title}</span>

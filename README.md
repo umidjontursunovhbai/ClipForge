@@ -23,6 +23,23 @@ npm run build
 
 The production files are created in `dist/`. You can serve that folder from any web server or deploy it behind a backend that talks to GPU workers.
 
+## Import Template Videos
+
+Only import videos that you own or have permission to use as templates.
+
+```bash
+npm run import:instagram -- https://www.instagram.com/p/DZ7GcVTFOcc/ instagram-dz7gcvtfocc
+```
+
+This creates:
+
+```text
+public/assets/templates/<slug>.mp4
+public/assets/templates/<slug>-poster.jpg
+```
+
+After import, add a template object in `src/App.jsx` that points to those files.
+
 ## Future GPU Architecture
 
 The frontend should call a server API, not run models inside the browser.
