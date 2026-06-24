@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1600" role="img" aria-label="Quick explainer video poster">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#172b2a"/>
+      <stop offset=".5" stop-color="#101716"/>
+      <stop offset="1" stop-color="#332119"/>
+    </linearGradient>
+    <linearGradient id="hoodie" x1="0" x2="1">
+      <stop offset="0" stop-color="#c8ef62"/>
+      <stop offset="1" stop-color="#21dfc7"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="1600" fill="url(#bg)"/>
+  <circle cx="220" cy="285" r="86" fill="#c8ef62" opacity=".18"/>
+  <circle cx="710" cy="520" r="110" fill="#ff7a59" opacity=".16"/>
+  <rect x="145" y="198" width="610" height="710" rx="36" fill="#ffffff" opacity=".07"/>
+  <path d="M164 1600c28-262 90-428 186-496 74-52 210-51 285 2 96 69 158 233 186 494Z" fill="url(#hoodie)"/>
+  <path d="M380 835h177l34 220c-54 64-157 64-210 0Z" fill="#a56d58"/>
+  <path d="M344 670c-4-113 50-200 127-200 83 0 140 86 136 200-4 91-60 163-132 163-70 0-128-72-131-163Z" fill="#c98b6d"/>
+  <path d="M339 622c18-116 78-168 159-160 70 7 119 56 139 145-91-34-193-29-298 15Z" fill="#160f0d"/>
+  <circle cx="426" cy="681" r="10" fill="#211513"/>
+  <circle cx="532" cy="681" r="10" fill="#211513"/>
+  <path d="M432 762c33 29 78 29 111 0" stroke="#4d2b24" stroke-width="12" stroke-linecap="round"/>
+  <rect x="154" y="1218" width="592" height="106" rx="20" fill="#050807" opacity=".75"/>
+  <rect x="184" y="1252" width="422" height="18" rx="9" fill="#fff" opacity=".9"/>
+  <rect x="184" y="1289" width="332" height="14" rx="7" fill="#c8ef62" opacity=".95"/>
+</svg>
