@@ -1,8 +1,12 @@
+from pathlib import Path
+
+from backend.core.config import settings
 from backend.domain.models import Template
 
 
 class TemplateRepository:
     def __init__(self) -> None:
+        public_dir = Path(settings.frontend_public_dir)
         self.templates = [
             Template(
                 id=f"local-template-{number:03d}",
@@ -12,6 +16,7 @@ class TemplateRepository:
                 media_url=f"/assets/templates/local/local-template-{number:03d}.mp4",
                 poster_url=f"/assets/templates/local/local-template-{number:03d}-poster.jpg",
                 default_prompt="Bugun sizga bitta muhim fikrni aytaman.",
+                source_path=str(public_dir / f"assets/templates/local/local-template-{number:03d}.mp4"),
             )
             for number in range(1, 21)
         ]

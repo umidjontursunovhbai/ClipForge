@@ -28,6 +28,19 @@ python3 -m venv .venv
 GET  /health
 GET  /api/templates
 GET  /api/templates/{template_id}
+POST /api/templates/{template_id}/transcription
 POST /api/generation/preview
 GET  /api/generation/jobs/{job_id}
+```
+
+## Local transcription model
+
+The transcription endpoint uses `faster-whisper` locally. It auto-detects language and uses GPU when CUDA is available.
+
+Environment overrides:
+
+```bash
+CLIPFORGE_TRANSCRIPTION_MODEL_SIZE=small
+CLIPFORGE_TRANSCRIPTION_DEVICE=auto
+CLIPFORGE_TRANSCRIPTION_COMPUTE_TYPE=auto
 ```

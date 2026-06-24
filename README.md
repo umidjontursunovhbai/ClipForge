@@ -48,8 +48,17 @@ Current API endpoints:
 GET  /health
 GET  /api/templates
 GET  /api/templates/{template_id}
+POST /api/templates/{template_id}/transcription
 POST /api/generation/preview
 GET  /api/generation/jobs/{job_id}
+```
+
+Template transcription uses `faster-whisper` locally. It auto-detects the source language and uses CUDA when available.
+
+```bash
+CLIPFORGE_TRANSCRIPTION_MODEL_SIZE=small
+CLIPFORGE_TRANSCRIPTION_DEVICE=auto
+CLIPFORGE_TRANSCRIPTION_COMPUTE_TYPE=auto
 ```
 
 ## Import Template Videos

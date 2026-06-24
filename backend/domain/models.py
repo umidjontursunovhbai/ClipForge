@@ -10,6 +10,7 @@ class Template:
     media_url: str
     poster_url: str | None
     default_prompt: str
+    source_path: str | None = None
 
 
 @dataclass(frozen=True)

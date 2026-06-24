@@ -16,7 +16,13 @@ import { templates } from "../features/templates/data/templates.js";
 import { TemplateFeed } from "../features/templates/components/TemplateFeed.jsx";
 import { previewStages } from "../services/previewGeneration.js";
 import { countWords, estimateReadingSeconds } from "../services/scriptMetrics.js";
+import { transcribeTemplate } from "../services/apiClient.js";
 import { playVoicePreview } from "../services/voicePreview.js";
+
+const detectedLanguageMap = {
+  en: "English",
+  uz: "Uzbek",
+};
 
 export default function App() {
   const [selectedId, setSelectedId] = useState(templates[0].id);
@@ -25,6 +31,7 @@ export default function App() {
   const [language, setLanguage] = useState("Uzbek");
   const [voice, setVoice] = useState("Casual");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState("Ready for preview");
 
@@ -36,13 +43,35 @@ export default function App() {
   const wordCount = countWords(script);
   const estimatedSeconds = estimateReadingSeconds(wordCount);
 
-  function chooseTemplate(template) {
+  async function chooseTemplate(template) {
     setSelectedId(template.id);
     setScript(template.prompt);
     setVoice(template.tone);
-    setResult("Template loaded");
+    setResult("Transcribing template audio");
     setProgress(0);
     setView("editor");
+
+    try {
+      setIsTranscribing(true);
+      const transcription = await transcribeTemplate(template.id);
+      if (transcription.text) {
+        setScript(transcription.text.slice(0, 1000));
+        if (detectedLanguageMap[transcription.language]) {
+          setLanguage(detectedLanguageMap[transcription.language]);
+        }
+        setResult(
+          transcription.language
+            ? `Transcribed audio (${transcription.language})`
+            : "Transcribed template audio"
+        );
+      } else {
+        setResult("No speech detected in template");
+      }
+    } catch (error) {
+      setResult(error instanceof Error ? error.message : "Template transcription failed");
+    } finally {
+      setIsTranscribing(false);
+    }
   }
 
   function generatePreview() {
@@ -137,6 +166,7 @@ export default function App() {
               wordCount={wordCount}
               estimatedSeconds={estimatedSeconds}
               isGenerating={isGenerating}
+              isTranscribing={isTranscribing}
               onScriptChange={setScript}
               onLanguageChange={setLanguage}
               onVoiceChange={setVoice}

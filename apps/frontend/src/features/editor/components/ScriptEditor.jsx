@@ -11,6 +11,7 @@ export function ScriptEditor({
   wordCount,
   estimatedSeconds,
   isGenerating,
+  isTranscribing,
   onScriptChange,
   onLanguageChange,
   onVoiceChange,
@@ -34,14 +35,15 @@ export function ScriptEditor({
         id="script-text"
         value={script}
         onChange={(event) => onScriptChange(event.target.value)}
-        maxLength={260}
+        maxLength={1000}
         placeholder="Write the words this person should say..."
+        disabled={isTranscribing}
       />
 
       <div className="stats-row">
         <span>{wordCount} words</span>
         <span>{estimatedSeconds}s estimate</span>
-        <span>{260 - script.length} chars left</span>
+        <span>{1000 - script.length} chars left</span>
       </div>
 
       <div className="control-grid" id="voice">
@@ -103,7 +105,7 @@ export function ScriptEditor({
           className="primary-button"
           type="button"
           onClick={onGeneratePreview}
-          disabled={isGenerating || script.trim().length < 4}
+          disabled={isTranscribing || isGenerating || script.trim().length < 4}
         >
           <Wand2 size={18} aria-hidden="true" />
           Generate Preview
