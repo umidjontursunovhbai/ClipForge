@@ -37,6 +37,61 @@ username: admin
 password: admin12345
 ```
 
+## Run With Docker
+
+The Docker setup runs:
+
+```text
+frontend  -> Nginx static site and /api reverse proxy
+backend   -> FastAPI API
+postgres  -> database
+ngrok     -> optional public tunnel
+```
+
+Run the app:
+
+```bash
+docker compose up -d --build postgres backend frontend
+```
+
+Open:
+
+```text
+http://127.0.0.1:5173/
+```
+
+Backend remains available at:
+
+```text
+http://127.0.0.1:8088/
+```
+
+The backend container requests NVIDIA GPU access with `gpus: all`. On Ubuntu, Docker needs the NVIDIA container runtime installed for GPU workloads.
+
+## Public URL With Ngrok
+
+Create a `.env` file from `.env.example` and add your ngrok authtoken:
+
+```bash
+cp .env.example .env
+```
+
+```text
+NGROK_AUTHTOKEN=your-ngrok-token
+```
+
+Start the public tunnel:
+
+```bash
+docker compose --profile public up -d ngrok
+```
+
+Get the public URL:
+
+```bash
+curl -s http://127.0.0.1:4040/api/tunnels
+```
+
 ## Build For Server
 
 ```bash

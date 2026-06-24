@@ -15,5 +15,49 @@ services:
       timeout: 3s
       retries: 10
 
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      CLIPFORGE_DATABASE_URL: postgresql+psycopg://clipforge:clipforge@postgres:5432/clipforge
+      CLIPFORGE_FRONTEND_PUBLIC_DIR: apps/frontend/public
+      CLIPFORGE_GENERATED_STORAGE_DIR: backend/storage/generated
+      CLIPFORGE_GENERATED_BASE_URL: /generated
+      CLIPFORGE_TRANSCRIPTION_DEVICE: cuda
+      CLIPFORGE_TRANSCRIPTION_COMPUTE_TYPE: float16
+    ports:
+      - "8088:8088"
+    gpus: all
+    volumes:
+      - generated_media:/app/backend/storage/generated
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    command: http frontend:80
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN:-}
+    ports:
+      - "4040:4040"
+    depends_on:
+      - frontend
+    profiles:
+      - public
+
 volumes:
   clipforge_postgres:
+  generated_media:

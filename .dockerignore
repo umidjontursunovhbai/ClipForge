@@ -1,0 +1,10 @@
+**/node_modules
+**/dist
+.venv
+.git
+.qa
+.runtime
+backend/storage/generated
+*.pyc
+__pycache__
+* 2.*
