@@ -531,6 +531,8 @@ export default function App() {
             {previewTemplate && <PhonePreview selectedTemplate={previewTemplate} />}
             <ScriptEditor
               script={script}
+              result={result}
+              progress={progress}
               wordCount={wordCount}
               estimatedSeconds={estimatedSeconds}
               isGenerating={isGenerating}

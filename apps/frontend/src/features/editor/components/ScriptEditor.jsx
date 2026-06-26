@@ -3,6 +3,8 @@ import React from "react";
 
 export function ScriptEditor({
   script,
+  result,
+  progress,
   wordCount,
   estimatedSeconds,
   isGenerating,
@@ -37,6 +39,16 @@ export function ScriptEditor({
         <span>{wordCount} words</span>
         <span>{estimatedSeconds}s estimate</span>
         <span>{1000 - script.length} chars left</span>
+      </div>
+
+      <div className="generation-status" aria-live="polite">
+        <div className="generation-status-line">
+          <span>{result}</span>
+          <strong>{progress}%</strong>
+        </div>
+        <div className="generation-track">
+          <span style={{ width: `${progress}%` }} />
+        </div>
       </div>
 
       <div className="action-row script-actions">

@@ -532,7 +532,7 @@ h2 {
   grid-area: editor;
   align-self: stretch;
   display: grid;
-  grid-template-rows: auto auto minmax(250px, 1fr) auto auto;
+  grid-template-rows: auto auto minmax(220px, 1fr) auto auto auto;
   gap: 0;
   padding: 22px 24px;
   overflow: hidden;
@@ -605,6 +605,45 @@ textarea:focus {
   background: var(--panel-2);
   font-size: 12px;
   font-weight: 800;
+}
+
+.generation-status {
+  padding: 12px;
+  border: 1px solid var(--dark-line);
+  border-radius: var(--radius);
+  background: #ffffff;
+  margin-bottom: 12px;
+}
+
+.generation-status-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+  color: #43504d;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.generation-status-line strong {
+  color: var(--teal-dark);
+}
+
+.generation-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dfe7e4;
+}
+
+.generation-track span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--teal), var(--coral));
+  transition: width 260ms ease;
 }
 
 .action-row {
@@ -865,7 +904,7 @@ textarea:focus {
   }
 
   .editor-panel {
-    grid-template-rows: auto auto minmax(210px, 1fr) auto auto;
+    grid-template-rows: auto auto minmax(210px, 1fr) auto auto auto;
     overflow: visible;
   }
 
