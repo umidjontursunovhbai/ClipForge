@@ -6,3 +6,5 @@ dist/
 __pycache__/
 *.py[cod]
 backend/storage/generated/
+.runtime/
+models/

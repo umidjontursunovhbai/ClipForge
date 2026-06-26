@@ -8,3 +8,4 @@ backend/storage/generated
 *.pyc
 __pycache__
 * 2.*
+models

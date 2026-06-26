@@ -26,11 +26,19 @@ services:
       CLIPFORGE_GENERATED_BASE_URL: /generated
       CLIPFORGE_TRANSCRIPTION_DEVICE: cuda
       CLIPFORGE_TRANSCRIPTION_COMPUTE_TYPE: float16
+      CLIPFORGE_PIPER_BINARY: /app/models/piper/piper
+      CLIPFORGE_PIPER_VOICE: /app/models/voices/en_US-lessac-medium.onnx
+      CLIPFORGE_WAV2LIP_DIR: /app/models/wav2lip/src
+      CLIPFORGE_WAV2LIP_CHECKPOINT: /app/models/wav2lip/checkpoints/wav2lip_gan.pth
+      CLIPFORGE_WAV2LIP_BOX: 300 720 130 620
+      CLIPFORGE_LIPSYNC_COMMAND: python3 /app/backend/scripts/lipsync_pipeline.py --video-path {video_path} --script {script} --output-path {output_path} --language {language} --voice {voice}
     ports:
       - "8088:8088"
     gpus: all
     volumes:
       - generated_media:/app/backend/storage/generated
+      - ./models:/app/models
+      - ./backend:/app/backend
     depends_on:
       postgres:
         condition: service_healthy

@@ -204,3 +204,28 @@ User script + selected template
 ```
 
 For a free-start MVP, the queue/storage contract is already in place. The next GPU step is to point `CLIPFORGE_LIPSYNC_COMMAND` at the selected local lip-sync model.
+
+
+## Local Model Pipeline
+
+For real local generation, prepare model assets on the GPU laptop:
+
+```bash
+./scripts/setup-local-models.sh
+```
+
+This downloads:
+
+```text
+Piper binary + English voice model
+Wav2Lip source + Wav2Lip GAN checkpoint
+S3FD face detector checkpoint
+```
+
+Then run Docker:
+
+```bash
+docker compose up -d --build backend frontend
+```
+
+The current first working template uses a fixed Wav2Lip face box configured with `CLIPFORGE_WAV2LIP_BOX`. This is good enough for the first camera-front template, but later each template should store its own face box metadata.
