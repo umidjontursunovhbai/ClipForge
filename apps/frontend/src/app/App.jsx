@@ -34,6 +34,24 @@ const detectedLanguageMap = {
 
 const storedToken = window.localStorage.getItem("clipforge_token");
 
+function parseRoute(pathname = window.location.pathname) {
+  const parts = pathname.split("/").filter(Boolean);
+
+  if (parts[0] === "editor" && parts[1]) {
+    return { page: "editor", templateId: decodeURIComponent(parts[1]) };
+  }
+
+  if (parts[0] === "settings") {
+    return { page: "settings" };
+  }
+
+  if (parts[0] === "voice") {
+    return { page: "voice" };
+  }
+
+  return { page: "dashboard" };
+}
+
 async function pollJob({ fetchJob, onUpdate }) {
   for (let index = 0; index < 240; index += 1) {
     const job = await fetchJob();
@@ -49,6 +67,14 @@ async function pollJob({ fetchJob, onUpdate }) {
   throw new Error("Job timeout. Server is still busy.");
 }
 
+function EmptyPage({ title }) {
+  return (
+    <div className="empty-route" aria-label={title}>
+      <h1>{title}</h1>
+    </div>
+  );
+}
+
 export default function App() {
   const [authToken, setAuthToken] = useState(storedToken);
   const [authError, setAuthError] = useState("");
@@ -58,7 +84,7 @@ export default function App() {
   const [isLoadingTemplates, setIsLoadingTemplates] = useState(Boolean(storedToken));
   const [selectedId, setSelectedId] = useState("");
   const [script, setScript] = useState("");
-  const [view, setView] = useState("templates");
+  const [route, setRoute] = useState(() => parseRoute());
   const [language, setLanguage] = useState("Uzbek");
   const [voice, setVoice] = useState("Casual");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -66,6 +92,29 @@ export default function App() {
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState("Ready");
   const [generatedUrl, setGeneratedUrl] = useState("");
+
+  function navigate(path, options = {}) {
+    const method = options.replace ? "replaceState" : "pushState";
+    if (window.location.pathname !== path) {
+      window.history[method](null, "", path);
+    }
+    setRoute(parseRoute(path));
+  }
+
+  useEffect(() => {
+    function handlePopState() {
+      setRoute(parseRoute());
+    }
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  useEffect(() => {
+    if (authToken && window.location.pathname === "/") {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [authToken]);
 
   useEffect(() => {
     if (!authToken) {
@@ -104,6 +153,27 @@ export default function App() {
     };
   }, [authToken]);
 
+  useEffect(() => {
+    if (!templates.length || route.page !== "editor") {
+      return;
+    }
+
+    const routeTemplate = templates.find((template) => template.id === route.templateId);
+    if (!routeTemplate) {
+      navigate("/dashboard", { replace: true });
+      return;
+    }
+
+    if (selectedId !== routeTemplate.id) {
+      setSelectedId(routeTemplate.id);
+      setScript(routeTemplate.prompt);
+      setVoice(routeTemplate.tone);
+      setGeneratedUrl("");
+      setProgress(0);
+      setResult("Ready");
+    }
+  }, [route.page, route.templateId, selectedId, templates]);
+
   const selectedTemplate = useMemo(
     () => templates.find((template) => template.id === selectedId) ?? templates[0],
     [selectedId, templates]
@@ -125,6 +195,7 @@ export default function App() {
 
   const wordCount = countWords(script);
   const estimatedSeconds = estimateReadingSeconds(wordCount);
+  const isBusy = isGenerating || isTranscribing;
 
   async function handleLogin(payload) {
     setIsLoggingIn(true);
@@ -134,6 +205,7 @@ export default function App() {
       const response = await login(payload);
       window.localStorage.setItem("clipforge_token", response.token);
       setAuthToken(response.token);
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       setAuthError(error instanceof Error ? error.message : "Login failed");
     } finally {
@@ -147,7 +219,7 @@ export default function App() {
     setTemplates([]);
     setSelectedId("");
     setScript("");
-    setView("templates");
+    navigate("/dashboard", { replace: true });
   }
 
   async function chooseTemplate(template) {
@@ -157,7 +229,7 @@ export default function App() {
     setGeneratedUrl("");
     setResult("Queued transcription");
     setProgress(0);
-    setView("editor");
+    navigate(`/editor/${encodeURIComponent(template.id)}`);
 
     try {
       setIsTranscribing(true);
@@ -281,25 +353,35 @@ export default function App() {
 
         <nav className="nav-stack">
           <button
-            className={`nav-item ${view === "templates" ? "active" : ""}`}
+            className={`nav-item ${route.page === "dashboard" ? "active" : ""}`}
             type="button"
-            onClick={() => setView("templates")}
+            onClick={() => navigate("/dashboard")}
             aria-label="Templates"
           >
             <Library size={18} aria-hidden="true" />
           </button>
           <button
-            className={`nav-item ${view === "editor" ? "active" : ""}`}
+            className={`nav-item ${route.page === "editor" ? "active" : ""}`}
             type="button"
-            onClick={() => selectedTemplate && setView("editor")}
+            onClick={() => navigate(selectedTemplate ? `/editor/${encodeURIComponent(selectedTemplate.id)}` : "/dashboard")}
             aria-label="Script"
           >
             <Captions size={18} aria-hidden="true" />
           </button>
-          <button className="nav-item" type="button" aria-label="Voice">
+          <button
+            className={`nav-item ${route.page === "voice" ? "active" : ""}`}
+            type="button"
+            onClick={() => navigate("/voice")}
+            aria-label="Voice"
+          >
             <Mic2 size={18} aria-hidden="true" />
           </button>
-          <button className="nav-item" type="button" aria-label="Settings">
+          <button
+            className={`nav-item ${route.page === "settings" ? "active" : ""}`}
+            type="button"
+            onClick={() => navigate("/settings")}
+            aria-label="Settings"
+          >
             <Settings2 size={18} aria-hidden="true" />
           </button>
         </nav>
@@ -312,8 +394,8 @@ export default function App() {
         </button>
       </aside>
 
-      <section className={`workspace ${view === "templates" ? "gallery-workspace" : ""}`}>
-        {view === "editor" && (
+      <section className={`workspace ${route.page === "dashboard" ? "gallery-workspace" : ""}`}>
+        {route.page !== "dashboard" && (
           <header className="topbar">
             <label className="search-control" htmlFor="template-search">
               <Search size={18} aria-hidden="true" />
@@ -323,16 +405,16 @@ export default function App() {
             <div className="queue-pill">
               <Gauge size={17} aria-hidden="true" />
               <span>Server GPU queue</span>
-              <strong>{isGenerating || isTranscribing ? "Busy" : "Idle"}</strong>
+              <strong>{isBusy ? "Busy" : "Idle"}</strong>
             </div>
           </header>
         )}
 
-        {view === "templates" ? (
-          <TemplateFeed templates={templates} onChooseTemplate={chooseTemplate} />
-        ) : (
+        {route.page === "dashboard" && <TemplateFeed templates={templates} onChooseTemplate={chooseTemplate} />}
+
+        {route.page === "editor" && (
           <div className="editor-view">
-            <button className="back-button" type="button" onClick={() => setView("templates")}>
+            <button className="back-button" type="button" onClick={() => navigate("/dashboard")}>
               <ArrowLeft size={18} aria-hidden="true" />
               Templates
             </button>
@@ -356,6 +438,9 @@ export default function App() {
             />
           </div>
         )}
+
+        {route.page === "voice" && <EmptyPage title="Voice" />}
+        {route.page === "settings" && <EmptyPage title="Settings" />}
       </section>
     </main>
   );

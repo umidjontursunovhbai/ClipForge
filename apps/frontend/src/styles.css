@@ -202,15 +202,17 @@ button {
 
 .editor-view {
   display: grid;
-  grid-template-columns: minmax(320px, 0.74fr) minmax(390px, 0.86fr);
+  grid-template-columns: minmax(260px, 0.72fr) minmax(360px, 0.92fr);
+  grid-template-rows: 40px minmax(0, 1fr);
   grid-template-areas:
     "back back"
     "preview editor";
-  align-items: start;
-  gap: 18px 28px;
+  align-items: stretch;
+  gap: 14px 24px;
+  height: calc(100vh - 76px);
   min-height: 0;
-  padding: 24px 28px 28px;
-  overflow: auto;
+  padding: 18px 24px 20px;
+  overflow: hidden;
 }
 
 .back-button {
@@ -231,6 +233,15 @@ button {
 .preview-column,
 .editor-panel {
   min-width: 0;
+  min-height: 0;
+}
+
+.preview-column {
+  grid-area: preview;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .section-heading,
@@ -238,8 +249,8 @@ button {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 18px;
+  gap: 14px;
+  margin-bottom: 12px;
 }
 
 h1,
@@ -421,12 +432,14 @@ h2 {
 
 .phone-preview {
   position: relative;
-  width: min(100%, 430px);
+  width: auto;
+  height: min(67vh, 590px);
+  max-width: 100%;
   aspect-ratio: 9 / 16;
   margin: 0 auto;
   overflow: hidden;
-  border: 8px solid #050808;
-  border-radius: 34px;
+  border: 7px solid #050808;
+  border-radius: 30px;
   background: #17211f;
   box-shadow: var(--shadow);
 }
@@ -484,8 +497,10 @@ h2 {
 .editor-panel {
   grid-area: editor;
   align-self: stretch;
-  padding: 24px;
-  overflow: auto;
+  display: grid;
+  grid-template-rows: auto auto minmax(96px, 0.7fr) auto auto auto auto;
+  padding: 18px 20px;
+  overflow: hidden;
   border-radius: var(--radius);
   color: var(--ink);
   background: var(--panel);
@@ -517,16 +532,17 @@ h2 {
 
 textarea {
   width: 100%;
-  min-height: 172px;
-  padding: 16px;
-  resize: vertical;
+  min-height: 96px;
+  height: 100%;
+  padding: 14px;
+  resize: none;
   outline: 0;
   border: 1px solid var(--dark-line);
   border-radius: var(--radius);
   color: var(--ink);
   background: #ffffff;
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 15px;
+  line-height: 1.45;
 }
 
 textarea:focus {
@@ -538,7 +554,7 @@ textarea:focus {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 12px 0 22px;
+  margin: 10px 0 14px;
 }
 
 .stats-row span {
@@ -555,8 +571,8 @@ textarea:focus {
 
 .control-grid {
   display: grid;
-  gap: 18px;
-  margin-bottom: 22px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .segmented {
@@ -570,7 +586,7 @@ textarea:focus {
 }
 
 .segmented button {
-  min-height: 38px;
+  min-height: 34px;
   border-radius: 6px;
   color: #52615d;
   cursor: pointer;
@@ -586,7 +602,7 @@ textarea:focus {
 }
 
 .progress-box {
-  padding: 14px;
+  padding: 12px;
   border: 1px solid var(--dark-line);
   border-radius: var(--radius);
   background: #ffffff;
@@ -625,9 +641,9 @@ textarea:focus {
 
 .action-row {
   display: grid;
-  grid-template-columns: 112px minmax(0, 1fr) 44px;
+  grid-template-columns: 106px minmax(0, 1fr) 42px;
   gap: 10px;
-  margin-top: 18px;
+  margin-top: 14px;
 }
 
 .secondary-button {
@@ -649,6 +665,18 @@ textarea:focus {
 .icon-button.dark {
   color: #f8fffc;
   background: #101716;
+}
+
+.empty-route {
+  display: grid;
+  place-items: center;
+  height: calc(100vh - 76px);
+  min-height: 0;
+  padding: 24px;
+}
+
+.empty-route h1 {
+  color: #f8fffc;
 }
 
 .auth-shell,
@@ -781,16 +809,18 @@ textarea:focus {
 }
 
 @media (max-width: 1180px) {
-  body {
-    overflow: auto;
-  }
-
   .app-shell {
     grid-template-columns: 72px minmax(0, 1fr);
   }
 
   .editor-view {
-    grid-template-columns: minmax(280px, 0.78fr) minmax(340px, 1fr);
+    grid-template-columns: minmax(230px, 0.7fr) minmax(340px, 1fr);
+    gap: 12px 18px;
+    padding: 16px 18px 18px;
+  }
+
+  .phone-preview {
+    height: min(64vh, 540px);
   }
 }
 
@@ -847,10 +877,22 @@ textarea:focus {
   }
 
   .editor-view {
+    grid-template-rows: auto auto auto;
     grid-template-areas:
       "back"
       "preview"
       "editor";
+    height: auto;
+    overflow: visible;
+  }
+
+  .phone-preview {
+    width: min(100%, 360px);
+    height: auto;
+  }
+
+  .editor-panel {
+    overflow: visible;
   }
 
   .template-feed {
