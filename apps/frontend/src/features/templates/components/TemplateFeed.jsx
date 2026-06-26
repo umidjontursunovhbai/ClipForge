@@ -15,7 +15,7 @@ export function TemplateFeed({ templates, onChooseTemplate }) {
             type="button"
           >
             <span className="video-frame">
-              <TemplateMedia template={template} />
+              <TemplateMedia template={template} hoverPreview />
               <span className="play-chip icon-only" aria-hidden="true">
                 <Play size={15} fill="currentColor" />
               </span>
