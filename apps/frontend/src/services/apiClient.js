@@ -80,3 +80,21 @@ export function resolveMediaUrl(url) {
   }
   return `${API_BASE_URL}${url}`;
 }
+
+
+function mapGeneratedAsset(asset) {
+  return {
+    id: asset.id,
+    jobId: asset.job_id,
+    templateId: asset.template_id,
+    script: asset.script,
+    mediaType: asset.media_type,
+    media: resolveMediaUrl(asset.public_url),
+    createdAt: asset.created_at,
+  };
+}
+
+export async function listGeneratedAssets(token) {
+  const assets = await request("/api/generation/library", { token });
+  return assets.map(mapGeneratedAsset);
+}

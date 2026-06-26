@@ -194,7 +194,8 @@ button {
   padding: 24px 28px 28px;
 }
 
-.template-gallery {
+.template-gallery,
+.library-gallery {
   min-height: 0;
   padding: 16px 18px 18px;
   overflow: auto;
@@ -304,14 +305,16 @@ h2 {
   background: rgba(255, 255, 255, 0.06);
 }
 
-.template-feed {
+.template-feed,
+.library-feed {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
   gap: 12px;
   align-items: start;
 }
 
-.template-card {
+.template-card,
+.library-card {
   display: grid;
   gap: 10px;
   padding: 0;
@@ -319,6 +322,28 @@ h2 {
   text-align: left;
   cursor: pointer;
   background: transparent;
+}
+
+.library-card {
+  cursor: default;
+}
+
+.library-card p {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #dbe7e3;
+  font-size: 12px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.library-empty {
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 112px);
+  color: #9aa9a5;
+  font-weight: 800;
 }
 
 .video-frame {
@@ -844,7 +869,8 @@ textarea:focus {
     overflow: visible;
   }
 
-  .template-feed {
+  .template-feed,
+  .library-feed {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
@@ -868,7 +894,8 @@ textarea:focus {
     height: 38px;
   }
 
-  .template-feed {
+  .template-feed,
+  .library-feed {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

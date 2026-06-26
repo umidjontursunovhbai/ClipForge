@@ -1,11 +1,10 @@
 import {
   ArrowLeft,
-  Captions,
   Clapperboard,
+  Film,
   Gauge,
   Library,
   LogOut,
-  Mic2,
   Plus,
   Search,
   Settings2,
@@ -20,6 +19,7 @@ import {
   createTranscriptionJob,
   getGenerationJob,
   getTranscriptionJob,
+  listGeneratedAssets,
   listTemplates,
   login,
   resolveMediaUrl,
@@ -44,8 +44,8 @@ function parseRoute(pathname = window.location.pathname) {
     return { page: "settings" };
   }
 
-  if (parts[0] === "voice") {
-    return { page: "voice" };
+  if (parts[0] === "library") {
+    return { page: "library" };
   }
 
   return { page: "dashboard" };
@@ -64,6 +64,47 @@ async function pollJob({ fetchJob, onUpdate }) {
   }
 
   throw new Error("Job timeout. Server is still busy.");
+}
+
+function LibraryPage({ assets, isLoading, error }) {
+  if (isLoading) {
+    return (
+      <section className="library-gallery" aria-label="Library">
+        <div className="library-empty">Loading library</div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="library-gallery" aria-label="Library">
+        <div className="library-empty">{error}</div>
+      </section>
+    );
+  }
+
+  if (assets.length === 0) {
+    return (
+      <section className="library-gallery" aria-label="Library">
+        <div className="library-empty">No generated videos yet</div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="library-gallery" aria-label="Library">
+      <div className="library-feed">
+        {assets.map((asset) => (
+          <article className="library-card" key={asset.id}>
+            <div className="video-frame">
+              <video src={asset.media} controls playsInline preload="metadata" aria-label="Generated video" />
+            </div>
+            <p>{asset.script}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function EmptyPage({ title }) {
@@ -91,6 +132,9 @@ export default function App() {
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState("Ready");
   const [generatedUrl, setGeneratedUrl] = useState("");
+  const [generatedAssets, setGeneratedAssets] = useState([]);
+  const [libraryError, setLibraryError] = useState("");
+  const [isLoadingLibrary, setIsLoadingLibrary] = useState(false);
   const userEditedScriptRef = useRef(false);
   const transcribedTemplateIdsRef = useRef(new Set());
   const activeTranscriptionTemplateRef = useRef("");
@@ -154,6 +198,37 @@ export default function App() {
       cancelled = true;
     };
   }, [authToken]);
+
+  useEffect(() => {
+    if (!authToken || route.page !== "library") {
+      return;
+    }
+
+    let cancelled = false;
+    setIsLoadingLibrary(true);
+    setLibraryError("");
+
+    listGeneratedAssets(authToken)
+      .then((items) => {
+        if (!cancelled) {
+          setGeneratedAssets(items);
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          setLibraryError(error instanceof Error ? error.message : "Library failed to load");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsLoadingLibrary(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authToken, route.page]);
 
   useEffect(() => {
     if (!templates.length || route.page !== "editor") {
@@ -340,6 +415,7 @@ export default function App() {
       setGeneratedUrl(completed.result_url);
       setResult("Generated preview ready");
       setProgress(100);
+      setGeneratedAssets([]);
     } catch (error) {
       setResult(error instanceof Error ? error.message : "Generation failed");
     } finally {
@@ -396,23 +472,15 @@ export default function App() {
             onClick={() => navigate("/dashboard")}
             aria-label="Templates"
           >
+            <Film size={18} aria-hidden="true" />
+          </button>
+          <button
+            className={`nav-item ${route.page === "library" ? "active" : ""}`}
+            type="button"
+            onClick={() => navigate("/library")}
+            aria-label="Library"
+          >
             <Library size={18} aria-hidden="true" />
-          </button>
-          <button
-            className={`nav-item ${route.page === "editor" ? "active" : ""}`}
-            type="button"
-            onClick={() => navigate(selectedTemplate ? `/editor/${encodeURIComponent(selectedTemplate.id)}` : "/dashboard")}
-            aria-label="Script"
-          >
-            <Captions size={18} aria-hidden="true" />
-          </button>
-          <button
-            className={`nav-item ${route.page === "voice" ? "active" : ""}`}
-            type="button"
-            onClick={() => navigate("/voice")}
-            aria-label="Voice"
-          >
-            <Mic2 size={18} aria-hidden="true" />
           </button>
           <button
             className={`nav-item ${route.page === "settings" ? "active" : ""}`}
@@ -437,7 +505,11 @@ export default function App() {
           <header className="topbar">
             <label className="search-control" htmlFor="template-search">
               <Search size={18} aria-hidden="true" />
-              <input id="template-search" type="search" placeholder="Search camera front templates" />
+              <input
+                id="template-search"
+                type="search"
+                placeholder={route.page === "library" ? "Search generated videos" : "Search camera front templates"}
+              />
             </label>
 
             <div className="queue-pill">
@@ -470,7 +542,9 @@ export default function App() {
           </div>
         )}
 
-        {route.page === "voice" && <EmptyPage title="Voice" />}
+        {route.page === "library" && (
+          <LibraryPage assets={generatedAssets} isLoading={isLoadingLibrary} error={libraryError} />
+        )}
         {route.page === "settings" && <EmptyPage title="Settings" />}
       </section>
     </main>

@@ -18,3 +18,13 @@ class GenerationJobResponse(BaseModel):
     voice: str
     result_url: str | None = None
     error: str | None = None
+
+
+class GeneratedAssetResponse(BaseModel):
+    id: str
+    job_id: str
+    template_id: str
+    script: str
+    public_url: str
+    media_type: str
+    created_at: str
