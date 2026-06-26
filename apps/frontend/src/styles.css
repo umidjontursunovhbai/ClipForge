@@ -498,26 +498,27 @@ h2 {
   grid-area: editor;
   align-self: stretch;
   display: grid;
-  grid-template-rows: auto auto minmax(96px, 0.7fr) auto auto auto auto;
-  padding: 18px 20px;
+  grid-template-rows: auto auto minmax(250px, 1fr) auto auto;
+  gap: 0;
+  padding: 22px 24px;
   overflow: hidden;
   border-radius: var(--radius);
   color: var(--ink);
-  background: var(--panel);
+  border: 1px solid rgba(16, 23, 22, 0.08);
+  background: linear-gradient(180deg, #fbfffd 0%, #f1f8f5 100%);
   box-shadow: var(--shadow);
 }
 
-.status-dot {
-  display: inline-flex;
+.script-header {
   align-items: center;
-  min-height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
-  color: var(--teal-dark);
-  background: #dcfbf7;
-  font-size: 12px;
-  font-weight: 900;
-  white-space: nowrap;
+  margin-bottom: 18px;
+}
+
+.script-header p {
+  margin-top: 7px;
+  color: #687773;
+  font-size: 14px;
+  line-height: 1.35;
 }
 
 .field-label {
@@ -532,29 +533,32 @@ h2 {
 
 textarea {
   width: 100%;
-  min-height: 96px;
+  min-height: 250px;
   height: 100%;
-  padding: 14px;
+  padding: 18px;
   resize: none;
   outline: 0;
-  border: 1px solid var(--dark-line);
+  border: 1px solid #cfded9;
   border-radius: var(--radius);
   color: var(--ink);
   background: #ffffff;
-  font-size: 15px;
-  line-height: 1.45;
+  box-shadow: inset 0 1px 0 rgba(16, 23, 22, 0.03);
+  font-size: 16px;
+  line-height: 1.52;
 }
 
 textarea:focus {
   border-color: var(--teal-dark);
-  box-shadow: 0 0 0 3px rgba(33, 223, 199, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(16, 23, 22, 0.03),
+    0 0 0 3px rgba(33, 223, 199, 0.18);
 }
 
 .stats-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 10px 0 14px;
+  margin: 12px 0 18px;
 }
 
 .stats-row span {
@@ -569,81 +573,16 @@ textarea:focus {
   font-weight: 800;
 }
 
-.control-grid {
-  display: grid;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.segmented {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 5px;
-  padding: 5px;
-  border: 1px solid var(--dark-line);
-  border-radius: var(--radius);
-  background: var(--panel-2);
-}
-
-.segmented button {
-  min-height: 34px;
-  border-radius: 6px;
-  color: #52615d;
-  cursor: pointer;
-  background: transparent;
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.segmented button.active {
-  color: #0f1817;
-  background: #ffffff;
-  box-shadow: 0 8px 20px rgba(16, 23, 22, 0.09);
-}
-
-.progress-box {
-  padding: 12px;
-  border: 1px solid var(--dark-line);
-  border-radius: var(--radius);
-  background: #ffffff;
-}
-
-.progress-line {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-  color: #43504d;
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.progress-line strong {
-  color: var(--teal-dark);
-}
-
-.progress-track {
-  height: 9px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #dfe7e4;
-}
-
-.progress-track span {
-  display: block;
-  width: 0;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--teal), var(--coral));
-  transition: width 260ms ease;
-}
-
 .action-row {
   display: grid;
-  grid-template-columns: 106px minmax(0, 1fr) 42px;
-  gap: 10px;
-  margin-top: 14px;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.script-actions .primary-button {
+  min-height: 52px;
+  font-size: 15px;
 }
 
 .secondary-button {
@@ -892,6 +831,7 @@ textarea:focus {
   }
 
   .editor-panel {
+    grid-template-rows: auto auto minmax(210px, 1fr) auto auto;
     overflow: visible;
   }
 

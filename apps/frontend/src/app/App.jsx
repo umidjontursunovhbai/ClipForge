@@ -25,7 +25,6 @@ import {
   resolveMediaUrl,
 } from "../services/apiClient.js";
 import { countWords, estimateReadingSeconds } from "../services/scriptMetrics.js";
-import { playVoicePreview } from "../services/voicePreview.js";
 
 const detectedLanguageMap = {
   en: "English",
@@ -238,7 +237,7 @@ export default function App() {
         fetchJob: () => getTranscriptionJob(queued.id, authToken),
         onUpdate: (job) => {
           setProgress(job.progress ?? 0);
-          setResult(job.status === "running" ? "Transcribing template audio" : `Transcription ${job.status}`);
+          setResult(job.status === "running" ? "Reading template audio" : `Template audio ${job.status}`);
         },
       });
 
@@ -251,7 +250,7 @@ export default function App() {
         if (detectedLanguageMap[completed.language]) {
           setLanguage(detectedLanguageMap[completed.language]);
         }
-        setResult(completed.language ? `Transcribed audio (${completed.language})` : "Transcribed template audio");
+        setResult("Script ready");
       } else {
         setResult("No speech detected in template");
       }
@@ -303,10 +302,6 @@ export default function App() {
     } finally {
       setIsGenerating(false);
     }
-  }
-
-  function playVoice() {
-    setResult(playVoicePreview({ script, language, voice }));
   }
 
   if (!authToken) {
@@ -421,19 +416,12 @@ export default function App() {
             {previewTemplate && <PhonePreview selectedTemplate={previewTemplate} />}
             <ScriptEditor
               script={script}
-              language={language}
-              voice={voice}
-              result={result}
-              progress={progress}
               wordCount={wordCount}
               estimatedSeconds={estimatedSeconds}
               isGenerating={isGenerating}
               isTranscribing={isTranscribing}
               generatedUrl={generatedUrl ? resolveMediaUrl(generatedUrl) : ""}
               onScriptChange={setScript}
-              onLanguageChange={setLanguage}
-              onVoiceChange={setVoice}
-              onPlayVoice={playVoice}
               onGeneratePreview={generatePreview}
             />
           </div>
