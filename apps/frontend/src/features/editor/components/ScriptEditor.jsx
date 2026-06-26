@@ -30,8 +30,7 @@ export function ScriptEditor({
         value={script}
         onChange={(event) => onScriptChange(event.target.value)}
         maxLength={1000}
-        placeholder="Write the words this person should say..."
-        disabled={isTranscribing}
+        placeholder={isTranscribing ? "Reading the original video script..." : "Write the words this person should say..."}
       />
 
       <div className="stats-row script-stats">
@@ -45,7 +44,7 @@ export function ScriptEditor({
           className="primary-button"
           type="button"
           onClick={onGeneratePreview}
-          disabled={isTranscribing || isGenerating || script.trim().length < 4}
+          disabled={isGenerating || script.trim().length < 4}
         >
           <Wand2 size={18} aria-hidden="true" />
           {generateLabel}

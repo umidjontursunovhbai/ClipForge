@@ -10,7 +10,7 @@ import {
   Search,
   Settings2,
 } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AuthPage } from "../features/auth/components/AuthPage.jsx";
 import { ScriptEditor } from "../features/editor/components/ScriptEditor.jsx";
 import { PhonePreview } from "../features/preview/components/PhonePreview.jsx";
@@ -91,6 +91,9 @@ export default function App() {
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState("Ready");
   const [generatedUrl, setGeneratedUrl] = useState("");
+  const userEditedScriptRef = useRef(false);
+  const transcribedTemplateIdsRef = useRef(new Set());
+  const activeTranscriptionTemplateRef = useRef("");
 
   function navigate(path, options = {}) {
     const method = options.replace ? "replaceState" : "pushState";
@@ -164,12 +167,13 @@ export default function App() {
     }
 
     if (selectedId !== routeTemplate.id) {
+      userEditedScriptRef.current = false;
       setSelectedId(routeTemplate.id);
       setScript(routeTemplate.prompt);
       setVoice(routeTemplate.tone);
       setGeneratedUrl("");
       setProgress(0);
-      setResult("Ready");
+      setResult("Loading video script");
     }
   }, [route.page, route.templateId, selectedId, templates]);
 
@@ -196,6 +200,26 @@ export default function App() {
   const estimatedSeconds = estimateReadingSeconds(wordCount);
   const isBusy = isGenerating || isTranscribing;
 
+  useEffect(() => {
+    if (route.page !== "editor" || !selectedTemplate || !authToken) {
+      return;
+    }
+
+    if (selectedTemplate.id !== route.templateId) {
+      return;
+    }
+
+    if (transcribedTemplateIdsRef.current.has(selectedTemplate.id)) {
+      return;
+    }
+
+    if (activeTranscriptionTemplateRef.current === selectedTemplate.id) {
+      return;
+    }
+
+    loadTemplateScript(selectedTemplate);
+  }, [authToken, route.page, route.templateId, selectedTemplate]);
+
   async function handleLogin(payload) {
     setIsLoggingIn(true);
     setAuthError("");
@@ -221,23 +245,24 @@ export default function App() {
     navigate("/dashboard", { replace: true });
   }
 
-  async function chooseTemplate(template) {
-    setSelectedId(template.id);
-    setScript(template.prompt);
-    setVoice(template.tone);
-    setGeneratedUrl("");
-    setResult("Queued transcription");
+  function handleScriptChange(value) {
+    userEditedScriptRef.current = true;
+    setScript(value);
+  }
+
+  async function loadTemplateScript(template) {
+    activeTranscriptionTemplateRef.current = template.id;
+    setIsTranscribing(true);
+    setResult("Reading video script");
     setProgress(0);
-    navigate(`/editor/${encodeURIComponent(template.id)}`);
 
     try {
-      setIsTranscribing(true);
       const queued = await createTranscriptionJob(template.id, authToken);
       const completed = await pollJob({
         fetchJob: () => getTranscriptionJob(queued.id, authToken),
         onUpdate: (job) => {
           setProgress(job.progress ?? 0);
-          setResult(job.status === "running" ? "Reading template audio" : `Template audio ${job.status}`);
+          setResult(job.status === "running" ? "Reading video script" : `Video script ${job.status}`);
         },
       });
 
@@ -245,8 +270,12 @@ export default function App() {
         throw new Error(completed.error ?? "Template transcription failed");
       }
 
+      transcribedTemplateIdsRef.current.add(template.id);
+
       if (completed.text) {
-        setScript(completed.text.slice(0, 1000));
+        if (!userEditedScriptRef.current && selectedId === template.id) {
+          setScript(completed.text.slice(0, 1000));
+        }
         if (detectedLanguageMap[completed.language]) {
           setLanguage(detectedLanguageMap[completed.language]);
         }
@@ -257,8 +286,22 @@ export default function App() {
     } catch (error) {
       setResult(error instanceof Error ? error.message : "Template transcription failed");
     } finally {
+      if (activeTranscriptionTemplateRef.current === template.id) {
+        activeTranscriptionTemplateRef.current = "";
+      }
       setIsTranscribing(false);
     }
+  }
+
+  function chooseTemplate(template) {
+    userEditedScriptRef.current = false;
+    setSelectedId(template.id);
+    setScript(template.prompt);
+    setVoice(template.tone);
+    setGeneratedUrl("");
+    setResult("Loading video script");
+    setProgress(0);
+    navigate(`/editor/${encodeURIComponent(template.id)}`);
   }
 
   async function generatePreview() {
@@ -421,7 +464,7 @@ export default function App() {
               isGenerating={isGenerating}
               isTranscribing={isTranscribing}
               generatedUrl={generatedUrl ? resolveMediaUrl(generatedUrl) : ""}
-              onScriptChange={setScript}
+              onScriptChange={handleScriptChange}
               onGeneratePreview={generatePreview}
             />
           </div>
